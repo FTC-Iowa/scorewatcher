@@ -83,7 +83,7 @@ public class Matches implements FileEvents {
             
             bufferedReader.close();
             
-            System.out.println(matchArray.toJSONString());
+            App.app.log("Match List", matchArray.toJSONString());
             
         } catch (FileNotFoundException ex) {
             Logger.getLogger(TeamList.class.getName()).log(Level.SEVERE, null, ex);
@@ -244,7 +244,7 @@ public class Matches implements FileEvents {
             matchArray.set(i, match);
         else
             matchArray.add(i, match);
-        System.out.println(match.toJSONString());
+        App.app.log("Parsed Match", match.toJSONString());
     }
 
     @Override
@@ -262,6 +262,7 @@ public class Matches implements FileEvents {
         parseFile();
     }
     
+    @Override
     public File getFile() {
         return file;
     }

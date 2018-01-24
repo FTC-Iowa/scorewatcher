@@ -55,7 +55,7 @@ public class DirWatcher extends Thread{
     
     public void registerFile(FileEvents file) {
         
-        System.out.println("--- Path=" + file.getFile().getAbsolutePath());
+        App.app.log("DirWatcher", "Watching directory " + file.getFile().getAbsolutePath());
         fileCallbacks.put(file.getFile().getAbsolutePath(), file);
     }
     
@@ -82,7 +82,7 @@ public class DirWatcher extends Thread{
             
             Path dir = keys.get(key);
             if (dir == null) {
-                System.err.println("WatchKey not recognized!!");
+                App.app.log("DirWatcher", "WatchKey not recognized!!");
                 continue;
             }
             
@@ -101,7 +101,7 @@ public class DirWatcher extends Thread{
                 // print out event
                 //System.out.format("%s: %s\n", event.kind().name(), name.toAbsolutePath());
                 
-                System.out.println("--- path=" + child.toAbsolutePath().toString());
+                App.app.log("DirWatcher", "File Changed: " + child.toAbsolutePath().toString());
                 FileEvents file = fileCallbacks.get(child.toAbsolutePath().toString());
                 if ( file != null ) {
                     //DirectoryEvents d = callbacks.get(key);
@@ -112,7 +112,7 @@ public class DirWatcher extends Thread{
                     } else if (kind == ENTRY_MODIFY) {
                         file.onFileModify();
                     } else {
-                        System.err.println("Unknown event type: " + kind.name());
+                        App.app.log("DirWatcher", "Unknown event type: " + kind.name());
                     }
                 }
             }

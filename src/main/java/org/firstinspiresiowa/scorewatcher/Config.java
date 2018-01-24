@@ -78,11 +78,11 @@ public final class Config {
             Logger.getLogger(Config.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        System.out.println("Event="+eventId);
-        System.out.println("Division="+divisionId);
-        System.out.println("EventType="+eventType.toString());
-        System.out.println("Server="+server);
-        System.out.println("Passphrase="+passphrase);
+        App.app.log("Config", "Event="+eventId);
+        App.app.log("Config", "Division="+divisionId);
+        App.app.log("Config", "EventType="+eventType.toString());
+        App.app.log("Config", "Server="+server);
+        App.app.log("Config", "Passphrase="+passphrase);
         //System.out.println(directory);
     }
     
@@ -141,7 +141,7 @@ public final class Config {
                         }
                     }
                 } else {
-                    System.out.println("User canceled / closed the dialog, result = " + result);
+                    App.app.log("Config", "User canceled / closed the dialog, result = " + result);
                     System.exit(-1);
                 }
             } else {
@@ -154,9 +154,8 @@ public final class Config {
     }
     
     private File getScoreSystemDirectory() throws FileNotFoundException {
-        System.out.println("Select the root directory of the Score System App...");
-        System.out.println("\tthis is the folder that was created when you extracted the .zip file");
-        System.out.print("Enter root directory... ");
+        App.app.log("Config", "Select the root directory of the Score System App...");
+        App.app.log("Config", "this is the folder that was created when you extracted the .zip file");
         JFileChooser fc = new JFileChooser();
         fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         fc.setDialogTitle("Score System Directory");
@@ -165,10 +164,10 @@ public final class Config {
         if (rv == JFileChooser.APPROVE_OPTION) {
             directory = fc.getSelectedFile().toPath();
         } else {
-            System.err.println("Failed to open score system directory");
+            App.app.log("Config", "Failed to open score system directory");
             throw new FileNotFoundException();
         }
-        System.out.println(directory.toString());
+        //System.out.println(directory.toString());
         
         return fc.getSelectedFile();
     }

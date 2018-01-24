@@ -23,7 +23,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 /**
@@ -89,8 +88,8 @@ public class Server {
         }
     }
     
-    public static final String DEFAULT_SERVER = "http://localhost:5000";
-    //public static final String DEFAULT_SERVER = "https://firstinspiresiowa.firebaseapp.com";
+    //public static final String DEFAULT_SERVER = "http://localhost:5000";
+    public static final String DEFAULT_SERVER = "https://firstinspiresiowa.firebaseapp.com";
     private final String USER_AGENT = "Vens/5.0";
 
     private final String url;
@@ -117,8 +116,8 @@ public class Server {
     }
     
     private void Post(JSONObject data, String endpoint) throws IOException{
-        System.out.println(data.toJSONString());
-        
+        //System.out.println(data.toJSONString());
+        App.app.log("HTTP POST", data.toJSONString());
         URL obj = new URL(url + endpoint);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         
@@ -138,8 +137,8 @@ public class Server {
         int responseCode = con.getResponseCode();
         //System.out.println("\nSending 'POST' request to URL : " + url);
         //System.out.println("Post parameters : " + data);
-        System.out.println("Response Code : " + responseCode);
-
+        //System.out.println("Response Code : " + responseCode);
+        App.app.log("Server Response", ""+responseCode);
         StringBuilder response;
         try (BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()))) {
@@ -151,6 +150,6 @@ public class Server {
         }
 
         //print result
-        System.out.println(response.toString());
+        //System.out.println(response.toString());
     }
 }

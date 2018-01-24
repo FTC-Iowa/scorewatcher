@@ -47,7 +47,7 @@ public class ReportsDir implements FileEvents {
     @Override
     public void onFileCreate() {
         try {
-            System.out.println("Reports dir created");
+            App.app.log("ReportsDir", "Reports directory created");
             App.app.dirWatcher.registerDirectory(file);
         } catch (IOException ex) {
             Logger.getLogger(ReportsDir.class.getName()).log(Level.SEVERE, null, ex);

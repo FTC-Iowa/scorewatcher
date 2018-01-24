@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.simple.JSONArray;
@@ -62,7 +61,7 @@ public class TeamList  implements FileEvents{
             
             bufferedReader.close();
             
-            System.out.println(teamArray.toJSONString());
+            App.app.log("Team List", teamArray.toJSONString());
             
         } catch (FileNotFoundException ex) {
             Logger.getLogger(TeamList.class.getName()).log(Level.SEVERE, null, ex);
@@ -89,6 +88,8 @@ public class TeamList  implements FileEvents{
         } else {
             teamArray.add(i, team);
         }
+        
+        App.app.log("Parsed Team", team.toJSONString());
     }
 
     @Override

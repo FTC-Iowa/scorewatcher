@@ -18,15 +18,19 @@ package org.firstinspiresiowa.scorewatcher;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
 import org.json.simple.JSONObject;
 
 /**
  *
  * @author jeram
  */
-public class App {
+public final class App implements Runnable{
     public final JSONObject body;
     public final JSONObject data;
     public final Config config;
@@ -37,13 +41,16 @@ public class App {
     public final Rankings rankings;
     public final Event event;
     public final ReportsDir reportsDir;
-    
+    private final PrintWriter log;
     
     public static App app;
     public App() throws FileNotFoundException, IOException {
         app = this;
         
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
+        LocalDateTime now = LocalDateTime.now();
         
+        this.log = new PrintWriter("firstinspiresiowa_" + dtf.format(now) + ".log", "UTF-8");
         
         
         
@@ -53,6 +60,7 @@ public class App {
             config = new Config();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
+            log("init", "Could not open config");
             throw ex;
         }
         
@@ -90,16 +98,48 @@ public class App {
         
         dirWatcher.registerDirectory(config.getRootDir());
         
-        System.out.println(body.toJSONString());
+        //System.out.println(body.toJSONString());
         
         server = new Server(config.getServer(), body);
         
     }
     
     public void run() {
-        System.out.println("hello world");
+        //System.out.println("hello world");
         server.startThread(1000);
-        dirWatcher.run();
+        dirWatcher.start();
+        
+        JFrame frame = new JFrame("FTC Score Watcher");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        Ui ui = new Ui();
+        ui.setOpaque(true);
+        frame.setContentPane(ui);
+        
+        
+        frame.pack();
+        frame.setVisible(true);
+        
+    }
+    
+    public void exit() {
+        this.log.close();
+        System.exit(0);
+    }
+    
+    public void log(String title, String msg) {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+        String str = "";
+        str += dtf.format(now) + " - ";
+        str += title + " - ";
+        str += msg;
+        
+        String dataShort = str;
+        if (str.length() > 147)
+            dataShort = str.substring(0, 147) + "...";
+        
+        log.println(str);
+        System.out.println(dataShort);
     }
     
     
@@ -107,6 +147,9 @@ public class App {
     
     public static void main(String[] args) throws Exception {
         App a = new App();
-        a.run();
+        
+        javax.swing.SwingUtilities.invokeLater(a);
+        
+        //a.run();
     }
 }

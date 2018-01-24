@@ -16,8 +16,6 @@
 package org.firstinspiresiowa.scorewatcher;
 
 import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.jsoup.Jsoup;
@@ -92,6 +90,8 @@ public class Rankings implements FileEvents{
                 
             }
         }
+        
+        App.app.log("Ranking List", rankings.toJSONString());
     }
     
     private JSONObject parseRow(Element row) {
@@ -112,6 +112,7 @@ public class Rankings implements FileEvents{
             json.put("league", league);
         }
         
+        App.app.log("Parsed Ranking", json.toJSONString());
         return json;
     }
     
