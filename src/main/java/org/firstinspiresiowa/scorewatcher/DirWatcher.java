@@ -19,13 +19,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
-import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
-import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
-import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
-import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
+import static java.nio.file.StandardWatchEventKinds.*;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,41 +34,63 @@ import java.util.Map;
 public class DirWatcher extends Thread{
     private final WatchService watcher;
     private final Map<WatchKey,Path> keys;
+    private final ArrayList<Integer> dirHashes;
     
-    // callbacks to call when events happen to each file
-    //private final Map<WatchKey,DirectoryEvents> callbacks;
-    
+    /// Map of file name to the callbacks to call when the file changes
     private final Map<String, FileEvents> fileCallbacks;
     
     static <T> WatchEvent<T> cast(WatchEvent<?> event) {
         return (WatchEvent<T>)event;
     }
     
+    /**
+     * Register a directory to be watched.
+     * This will cause the passed in directory to be watched.  Any time a file changes
+     * in this directory the DirWatcher will check to see if that file has been registered
+     * with registerFile() and if so it will call the callbacks on that file.
+     * @param directory Directory to watch
+     * @throws IOException  If the directory param is not actually a directory or doesn't exist
+     * @todo make this private
+     */
     public void registerDirectory(File directory) throws IOException {
         File dir = directory;
+        App.app.log("DirWatcher", "Watching for changes in files in the directory " + dir.toPath());
         WatchKey key = dir.toPath().register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
         keys.put(key, dir.toPath());
-        //callbacks.put(key, directory);
-    }
-    
-    public void registerFile(FileEvents file) {
-        
-        App.app.log("DirWatcher", "Watching directory " + file.getFile().getAbsolutePath());
-        fileCallbacks.put(file.getFile().getAbsolutePath(), file);
+        dirHashes.add(dir.hashCode());
     }
     
     /**
-     * Create a file watcher that will start watching the supplied directory.
+     * Register a file to the DirWatcher.
+     * If this file is in a directory that registerDirectory() was called on and
+     * the file changes then the callbacks will be called on this file.
+     * @param file The file to watch.
+     */
+    public void registerFile(FileEvents file) throws IOException {
+        App.app.log("DirWatcher", "Watching for changed in the file " + file.getFile().getAbsolutePath());
+        fileCallbacks.put(file.getFile().getAbsolutePath(), file);
+        if(!dirHashes.contains(file.getFile().getParentFile().hashCode())) {
+            registerDirectory(file.getFile().getParentFile());
+        }
+    }
+    
+    /**
+     * Create a DirWatcher.  By default this will not be watching any directories
      * @throws IOException 
      */
     public DirWatcher () throws IOException {
         this.watcher = FileSystems.getDefault().newWatchService();
         this.keys = new HashMap<>();
-        //this.callbacks = new HashMap<>();
+        this.dirHashes = new ArrayList<>();
         this.fileCallbacks = new HashMap<>();
     }
     
     @Override
+    /**
+     * This will run the DirWatcher thread.  While running it will watch for any
+     * changes made to the registered files, and if any events occur it will
+     * call the callbacks.
+     */
     public void run() {
         for (;;) {
             WatchKey key;
@@ -125,6 +145,6 @@ public class DirWatcher extends Thread{
                 }
             }
         }
+        App.app.log("DirWatcher", "The DirWatcher has stopped");
     }
-    
 }
