@@ -37,6 +37,7 @@ public final class App implements Runnable{
     public final Server server;
     public final TeamList teamList;
     public final DirWatcher dirWatcher;
+    public final Awards awards;
     public final Matches matches;
     public final Rankings rankings;
     public final Event event;
@@ -79,6 +80,7 @@ public final class App implements Runnable{
         event = new Event(new File(config.getRootDir(), "divisions.txt"));
         teamList = new TeamList(new File(config.getRootDir(), "teams.txt"));
         matches = new Matches(new File(config.getRootDir(), "matches.txt"));
+        awards = new Awards(new File(config.getRootDir(), "awards.txt"));
         
         reportsDir = new ReportsDir(new File(config.getRootDir(), "reports"));
         
@@ -93,6 +95,7 @@ public final class App implements Runnable{
         
         data.put("teams", teamList.getTeamList());
         data.put("matches", matches.getMatchList());
+        data.put("awards", awards.getAwardsList());
         data.put("rankings", rankings.getRankingList());
         
         

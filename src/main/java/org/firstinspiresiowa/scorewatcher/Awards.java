@@ -15,7 +15,13 @@
  */
 package org.firstinspiresiowa.scorewatcher;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.jsoup.Jsoup;
@@ -31,58 +37,79 @@ import org.jsoup.select.Elements;
 public class Awards implements FileEvents{
     private File file;
     
-    JSONArray awards;
+    JSONArray awardsArray;
     
-    public Awards() {
-        file = null;
-        awards = new JSONArray();
+    public Awards(File _file) {
+        file = _file;
+        awardsArray = new JSONArray();
+        if(file.exists()){
+            parseFile();
+        }
+        
+        App.app.dirWatcher.registerFile(this);
     }
     
     public JSONArray getAwardsList () {
-        return awards;
-    }
-    
-    public Awards(File _file){
-        this();
-        file = _file;
-        if(file.exists()) {
-            parseFile();
-        }
-        App.app.dirWatcher.registerFile(this);
-    }
-    
-    public void setFile(File _file) {
-        file = _file;
-        if(file.exists()) {
-            parseFile();
-        }
-        App.app.dirWatcher.registerFile(this);
+        return awardsArray;
     }
     
     private void parseFile() {
-        Element table;
+        String row;
+        int i = 0;
         try {
-            table = this.getHtmlTable();
-        } catch (Exception ex) {
-            return;
+            FileReader fileReader = new FileReader(file);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            
+            while((row = bufferedReader.readLine()) != null) {
+                parseRow(i, row);
+                i++;
+            }
+            
+            bufferedReader.close();
+            
+            App.app.log("Awards", awardsArray.toJSONString());
+            
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(TeamList.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(TeamList.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        Elements rows = table.getElementsByTag("tr");
-        boolean isLeague;
-        isLeague = "LEAGUE_CHAMPIONSHIP".equals(App.app.event.getEventType());
-        
-        int i = isLeague ? 2 : 1;
-        
     }
     
-    private Element getHtmlTable() throws Exception{
-        Document doc = Jsoup.parse(file, "UTF-8", "");
-        Elements tables = doc.getElementsByTag("table");
-        if (tables.isEmpty()) {
-            System.err.println("Could not find table in HTML document");
-            throw new Exception();
+    private void parseRow(int i, String row) {
+        int c = 0;
+        String cols[] = row.split("\\|",-1);
+        String awardName = cols[c++];
+        c++; //int threeithink = Integer.parseInt(cols[c++]);
+        c++; //boolean requiredAward = Boolean.getBoolean(cols[c++]);
+        c++; //boolean awardedAward = "1".equals(cols[c++]);
+        String awardDescription = cols[c++];
+        c++; //String space = cols[c++];
+        boolean notPresentedToTeam = Boolean.getBoolean(cols[c++]);
+        c++; //int noIdea = Integer.parseInt(cols[c++]);
+        int firstRunnerUp = 0;
+        int secondRunnerUp = 0;
+        String awardWinner = cols[c++];
+        if(notPresentedToTeam)  {
+            firstRunnerUp = Integer.parseInt(cols[c++]);
+            secondRunnerUp = Integer.parseInt(cols[c++]);
         }
-        return tables.first();
+        
+        JSONObject awards = new JSONObject();
+        
+        if(awardWinner != "0")  {
+            awards.put("name", awardName);
+            awards.put("description", awardDescription);
+            awards.put("winner", awardWinner);
+            awards.put("runner up 1", firstRunnerUp);
+            awards.put("runner up 2", secondRunnerUp);
+        }
+        
+        if(i < awardsArray.size())
+            awardsArray.set(i, awards);
+        else
+            awardsArray.add(i, awards);
+        App.app.log("Parsed Match", awards.toJSONString());
     }
 
     @Override
