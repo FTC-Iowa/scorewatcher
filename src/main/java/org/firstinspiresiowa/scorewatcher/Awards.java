@@ -80,30 +80,34 @@ public class Awards implements FileEvents{
         int c = 0;
         String cols[] = row.split("\\|",-1);
         String awardName = cols[c++];
-        c++; //int threeithink = Integer.parseInt(cols[c++]);
+        int teamsPerAward = Integer.parseInt(cols[c++]);
         c++; //boolean requiredAward = Boolean.getBoolean(cols[c++]);
-        c++; //boolean awardedAward = "1".equals(cols[c++]);
+        boolean order = "1".equals(cols[c++]);
         String awardDescription = cols[c++];
-        c++; //String space = cols[c++];
+        String script = cols[c++];
         boolean notPresentedToTeam = Boolean.getBoolean(cols[c++]);
-        c++; //int noIdea = Integer.parseInt(cols[c++]);
-        int firstRunnerUp = 0;
-        int secondRunnerUp = 0;
-        String awardWinner = cols[c++];
-        if(notPresentedToTeam)  {
-            firstRunnerUp = Integer.parseInt(cols[c++]);
-            secondRunnerUp = Integer.parseInt(cols[c++]);
+        int nameOfWinner = Integer.parseInt(cols[c++]);
+        int j = 0;
+        int[] teamArray = new int[teamsPerAward];
+        while (j < teamsPerAward){
+            teamArray[j] = Integer.parseInt(cols[c++]);
+            j++;
         }
         
         JSONObject awards = new JSONObject();
         
-        if(awardWinner != "0")  {
-            awards.put("name", awardName);
-            awards.put("description", awardDescription);
-            awards.put("winner", awardWinner);
-            awards.put("runner up 1", firstRunnerUp);
-            awards.put("runner up 2", secondRunnerUp);
+        awards.put("teams per award", teamsPerAward);
+        awards.put("name", awardName);
+        awards.put("description", awardDescription);
+        awards.put("order", order);
+        awards.put("script", script);
+        if(notPresentedToTeam){
+            awards.put("winners", nameOfWinner);
         }
+        else{
+            awards.put("winner_array", teamArray);
+        }
+        
         
         if(i < awardsArray.size())
             awardsArray.set(i, awards);
