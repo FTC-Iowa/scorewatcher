@@ -81,12 +81,12 @@ public class Awards implements FileEvents{
         String cols[] = row.split("\\|",-1);
         String awardName = cols[c++];
         int teamsPerAward = Integer.parseInt(cols[c++]);
-        c++; //boolean requiredAward = Boolean.getBoolean(cols[c++]);
-        boolean order = "1".equals(cols[c++]);
+        c++; //boolean requiredAward = "true".equals(cols[c++]);
+        boolean order = "true".equals(cols[c++]);
         String awardDescription = cols[c++];
         String script = cols[c++];
         boolean notPresentedToTeam = Boolean.getBoolean(cols[c++]);
-        int nameOfWinner = Integer.parseInt(cols[c++]);
+        String nameOfWinner = cols[c++];
         int j = 0;
         int[] teamArray = new int[teamsPerAward];
         while (j < teamsPerAward){
@@ -102,10 +102,10 @@ public class Awards implements FileEvents{
         awards.put("order", order);
         awards.put("script", script);
         if(notPresentedToTeam){
-            awards.put("winners", nameOfWinner);
+            awards.put("winner", nameOfWinner);
         }
         else{
-            awards.put("winner_array", teamArray);
+            awards.put("winner", teamArray);
         }
         
         
