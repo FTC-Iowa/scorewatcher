@@ -36,7 +36,11 @@ public class ReportsDir implements FileEvents {
                 Logger.getLogger(ReportsDir.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        App.app.dirWatcher.registerFile(this);
+        try {
+            App.app.dirWatcher.registerFile(this);
+        } catch (IOException ex) {
+            Logger.getLogger(ReportsDir.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     @Override

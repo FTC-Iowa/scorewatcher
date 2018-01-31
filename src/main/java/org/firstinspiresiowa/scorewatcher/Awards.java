@@ -24,10 +24,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 
 /**
@@ -35,7 +31,7 @@ import org.jsoup.select.Elements;
  * @author Jason
  */
 public class Awards implements FileEvents{
-    private File file;
+    private final File file;
     
     JSONArray awardsArray;
     
@@ -46,7 +42,11 @@ public class Awards implements FileEvents{
             parseFile();
         }
         
-        App.app.dirWatcher.registerFile(this);
+        try {
+            App.app.dirWatcher.registerFile(this);
+        } catch (IOException ex) {
+            Logger.getLogger(Awards.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     public JSONArray getAwardsList () {
@@ -85,18 +85,22 @@ public class Awards implements FileEvents{
         boolean order = "true".equals(cols[c++]);
         String awardDescription = cols[c++];
         String script = cols[c++];
-        boolean notPresentedToTeam = Boolean.getBoolean(cols[c++]);
+        boolean notPresentedToTeam = "true".equals(cols[c++]);
         String nameOfWinner = cols[c++];
         int j = 0;
-        int[] teamArray = new int[teamsPerAward];
-        while (j < teamsPerAward){
-            teamArray[j] = Integer.parseInt(cols[c++]);
-            j++;
+        JSONArray teamArray = new JSONArray();
+        
+        //int[] teamArray = new int[teamsPerAward];
+        for (j=0; j < teamsPerAward; j++){
+            if(j < teamArray.size())
+                teamArray.set(j, Integer.parseInt(cols[c++]));
+            else
+                teamArray.add(j, Integer.parseInt(cols[c++]));
         }
         
         JSONObject awards = new JSONObject();
         
-        awards.put("teams per award", teamsPerAward);
+        //awards.put("teams per award", teamsPerAward);
         awards.put("name", awardName);
         awards.put("description", awardDescription);
         awards.put("order", order);
@@ -113,7 +117,8 @@ public class Awards implements FileEvents{
             awardsArray.set(i, awards);
         else
             awardsArray.add(i, awards);
-        App.app.log("Parsed Match", awards.toJSONString());
+        App.app.log("Parsed Award", awards.toJSONString());
+        
     }
 
     @Override

@@ -16,6 +16,9 @@
 package org.firstinspiresiowa.scorewatcher;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.jsoup.Jsoup;
@@ -47,7 +50,11 @@ public class Rankings implements FileEvents{
         if(file.exists()) {
             parseFile();
         }
-        App.app.dirWatcher.registerFile(this);
+        try {
+            App.app.dirWatcher.registerFile(this);
+        } catch (IOException ex) {
+            Logger.getLogger(Rankings.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     public void setFile(File _file) {
@@ -55,7 +62,11 @@ public class Rankings implements FileEvents{
         if(file.exists()) {
             parseFile();
         }
-        App.app.dirWatcher.registerFile(this);
+        try {
+            App.app.dirWatcher.registerFile(this);
+        } catch (IOException ex) {
+            Logger.getLogger(Rankings.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     private void parseFile() {

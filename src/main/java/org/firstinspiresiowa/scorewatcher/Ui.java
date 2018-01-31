@@ -15,6 +15,8 @@
  */
 package org.firstinspiresiowa.scorewatcher;
 
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author jeram
@@ -39,6 +41,7 @@ public class Ui extends javax.swing.JPanel {
 
         jToggleButton1 = new javax.swing.JToggleButton();
         jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
 
         jToggleButton1.setText("Pause Server Uploads");
         jToggleButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -54,6 +57,13 @@ public class Ui extends javax.swing.JPanel {
             }
         });
 
+        jButton2.setText("Send Awards");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -62,7 +72,8 @@ public class Ui extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jToggleButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 147, Short.MAX_VALUE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 147, Short.MAX_VALUE)
+                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(153, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -71,8 +82,10 @@ public class Ui extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jToggleButton1)
                 .addGap(18, 18, 18)
+                .addComponent(jButton2)
+                .addGap(18, 18, 18)
                 .addComponent(jButton1)
-                .addContainerGap(225, Short.MAX_VALUE))
+                .addContainerGap(184, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -90,9 +103,32 @@ public class Ui extends javax.swing.JPanel {
         App.app.exit();
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        Object[] options = {"YES", "NO"};
+        int n = JOptionPane.showOptionDialog(this,
+                "Pressing yes will cause the scores to be shown to the teams.\n" +
+                "You should only press yes if ALL the awards have been announced\n" + 
+                "and the award ceremony is FINISHED.  Do you want to send the award\n" + 
+                "winners to the teams?", 
+                "WARNING - Confirm Award Upload",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE,
+                null,
+                options,
+                options[1]);
+        
+        System.out.println("Awards Respones = " + n);
+        
+        if ( n == 0 ) { // the user clicked YES
+            App.app.sendAwards();
+        }
+        
+    }//GEN-LAST:event_jButton2ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JToggleButton jToggleButton1;
     // End of variables declaration//GEN-END:variables
 }

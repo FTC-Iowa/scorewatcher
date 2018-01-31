@@ -77,7 +77,7 @@ public final class App implements Runnable{
         body.put("divisionId", config.getDivisionId());
         body.put("passphrase", config.getPassphrase());
                 
-        body.put("awards", awards.getAwardsList());
+        //body.put("awards", awards.getAwardsList());
         
         // Save the name of this division.  The data object will be saved in the
         // datebase at /events/{eventId}/divisions/{name}
@@ -168,5 +168,9 @@ public final class App implements Runnable{
         javax.swing.SwingUtilities.invokeLater(a);
         
         //a.run();
+    }
+
+    void sendAwards() {
+        body.put("awards", awards.getAwardsList());
     }
 }

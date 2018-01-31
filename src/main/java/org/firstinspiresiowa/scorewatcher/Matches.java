@@ -62,7 +62,11 @@ public class Matches implements FileEvents {
             parseFile();
         }
         
-        App.app.dirWatcher.registerFile(this);
+        try {
+            App.app.dirWatcher.registerFile(this);
+        } catch (IOException ex) {
+            Logger.getLogger(Matches.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     public JSONArray getMatchList() {
