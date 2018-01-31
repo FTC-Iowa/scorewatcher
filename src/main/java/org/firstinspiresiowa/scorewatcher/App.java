@@ -76,6 +76,8 @@ public final class App implements Runnable{
         body.put("eventId", config.getEventId());
         body.put("divisionId", config.getDivisionId());
         body.put("passphrase", config.getPassphrase());
+                
+        body.put("awards", awards.getAwardsList());
         
         // Save the name of this division.  The data object will be saved in the
         // datebase at /events/{eventId}/divisions/{name}
@@ -105,11 +107,6 @@ public final class App implements Runnable{
         division.put("teams", teamList.getTeamList());
         division.put("matches", matches.getMatchList());
         division.put("rankings", rankings.getRankingList());
-        
-        data.put("teams", teamList.getTeamList());
-        data.put("matches", matches.getMatchList());
-        data.put("awards", awards.getAwardsList());
-        data.put("rankings", rankings.getRankingList());
         
         
 
