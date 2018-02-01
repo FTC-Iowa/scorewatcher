@@ -28,7 +28,7 @@ import java.util.logging.Logger;
  * @author jeram
  */
 public class Event implements FileEvents {
-    private File file;
+    private final File file;
     private String eventName;
 
     public String getEventName() {

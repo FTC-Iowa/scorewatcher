@@ -19,9 +19,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -41,9 +38,11 @@ public final class Config {
     public final String FILE_NAME = "firstinspiresiowa.json";
     /// the config file
     private File cfgFile;
-    /// ref that all queries to the server contain to id to this event
+    /// ref that all queries to the server contain to id to this event.
+    /// This coresponds to the database location /events/{eventId}
     private String eventId;
-    
+    /// ref to the divisions the score system is attached to.
+    /// This coresponds to the database location /events/{eventId}/divisions/{divisionId}
     private String divisionId;
     /// url of the server we are connected to
     private String server;
@@ -54,8 +53,8 @@ public final class Config {
     /// the type of event
     private EventType eventType = EventType.LeagueTournament;
     
-    public Config() throws FileNotFoundException{
-        rootDir = new File(".");
+    public Config() throws FileNotFoundException, IOException{
+        rootDir = new File("."); // start by assuming the current directory is the root directory
         cfgFile = new File(rootDir, this.FILE_NAME);
         // see if it exists in the current working directory.  If it doesn't
         // get the correct working directory and switch to it.
@@ -73,17 +72,18 @@ public final class Config {
         try {
             readConfigFile(this.cfgFile);
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(Config.class.getName()).log(Level.SEVERE, null, ex);
+            App.app.log("Config", "Could not find config file `" + cfgFile.getAbsolutePath() + "`");
+            throw ex;
         } catch (IOException ex) {
-            Logger.getLogger(Config.class.getName()).log(Level.SEVERE, null, ex);
+            App.app.log("Config", "Error reading config file `" + cfgFile.getAbsolutePath() + "`");
+            throw ex;
         }
         
-        App.app.log("Config", "Event="+eventId);
-        App.app.log("Config", "Division="+divisionId);
-        App.app.log("Config", "EventType="+eventType.toString());
-        App.app.log("Config", "Server="+server);
-        App.app.log("Config", "Passphrase="+passphrase);
-        //System.out.println(directory);
+        App.app.log("Config", "Event ID    = "+eventId);
+        App.app.log("Config", "Division ID = "+divisionId);
+        App.app.log("Config", "Event Type  = "+eventType.toString());
+        App.app.log("Config", "Server URL  = "+server);
+        App.app.log("Config", "Passphrase  = "+passphrase);
     }
     
     public String getEventId() {
@@ -149,7 +149,8 @@ public final class Config {
             }
             //this.directory = FileSystems.getDefault().getPath((String) json.get("directory"));
         } catch (ParseException ex) {
-            Logger.getLogger(Config.class.getName()).log(Level.SEVERE, null, ex);
+            App.app.log("Config", "Failed parsing the config file");
+            System.exit(-1);            
         }
     }
     
@@ -160,15 +161,12 @@ public final class Config {
         fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         fc.setDialogTitle("Score System Directory");
         int rv = fc.showDialog(null, "Select");
-        Path directory;
         if (rv == JFileChooser.APPROVE_OPTION) {
-            directory = fc.getSelectedFile().toPath();
+            fc.getSelectedFile().toPath();
         } else {
             App.app.log("Config", "Failed to open score system directory");
             throw new FileNotFoundException();
         }
-        //System.out.println(directory.toString());
-        
         return fc.getSelectedFile();
     }
 
