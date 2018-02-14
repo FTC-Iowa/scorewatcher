@@ -99,7 +99,13 @@ public final class App implements Runnable{
             rankings = new Rankings();
         } else {
             // create the rankings object from the correct name of the file
-            String name = "reports/Rankings_" + event.getEventName() + ".html";
+            String name;
+            if(event.isMultiDivisions()) {
+                name = "reports/Rankings_" + event.getEventName() + "_" + event.getDivName() + ".html";
+            } else {
+                name = "reports/Rankings_" + event.getEventName() + ".html";                
+            }
+            
             rankings = new Rankings(new File(config.getRootDir(), name));
         }
         

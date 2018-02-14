@@ -30,6 +30,16 @@ import java.util.logging.Logger;
 public class Event implements FileEvents {
     private final File file;
     private String eventName;
+    private int divNumber = 0;
+    private String divName = "";
+
+    public int getDivNumber() {
+        return divNumber;
+    }
+    
+    public String getDivName() {
+        return divName;
+    }
 
     public String getEventName() {
         return eventName;
@@ -73,6 +83,12 @@ public class Event implements FileEvents {
                     case 5:
                         multiDivisions = "true".equals(row);
                         break;
+                    case 7:
+                        if(multiDivisions) {
+                            String cols[] = row.split("\\|");
+                            divNumber = Integer.parseInt(cols[0]);
+                            divName = cols[1];
+                        }
                     default:
                         break;
                 }

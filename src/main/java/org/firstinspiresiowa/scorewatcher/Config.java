@@ -114,7 +114,7 @@ public final class Config {
             this.eventId = (String) json.get("event");
             this.server = (String) json.get("server");
             this.passphrase = (String) json.get("passphrase");
-            this.eventType = EventType.valueOf((String)json.get("event_type"));
+            this.eventType = EventType.Championship; //EventType.valueOf((String)json.get("event_type"));
             JSONArray divisions = (JSONArray) json.get("divisions");
             if(divisions.size() > 1) {
                 int i = 0;

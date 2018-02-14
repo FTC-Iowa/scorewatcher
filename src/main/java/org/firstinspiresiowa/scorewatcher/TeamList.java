@@ -59,8 +59,9 @@ public class TeamList  implements FileEvents{
             BufferedReader bufferedReader = new BufferedReader(fileReader);
             
             while((row = bufferedReader.readLine()) != null) {
-                parseRow(i, row);
-                i++;
+                boolean rv = parseRow(i, row);
+                if(rv)
+                    i++;
             }
             
             bufferedReader.close();
@@ -74,8 +75,14 @@ public class TeamList  implements FileEvents{
         }
     }
     
-    private void parseRow(int i, String row) {
+    private boolean parseRow(int i, String row) {
         String cols[] = row.split("\\|");
+        if(App.app.event.isMultiDivisions()) {
+            int div = Integer.parseInt(cols[0]);
+            if (div != App.app.event.getDivNumber()) {
+                return false;
+            }
+        }
         int number = Integer.parseInt(cols[1]);
         String name = cols[2].trim();
         String city = cols[3].trim();
@@ -94,6 +101,7 @@ public class TeamList  implements FileEvents{
         }
         
         App.app.log("Parsed Team", team.toJSONString());
+        return true;
     }
 
     @Override
