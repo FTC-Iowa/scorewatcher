@@ -36,6 +36,7 @@ public final class App implements Runnable{
     public final DirWatcher dirWatcher;
     public final Awards awards;
     public final Matches matches;
+    public final Matches dualDivisionFinals;
     public final Rankings rankings;
     public final Event event;
     public final ReportsDir reportsDir;
@@ -88,6 +89,7 @@ public final class App implements Runnable{
         event = new Event(new File(config.getRootDir(), "divisions.txt"));
         teamList = new TeamList(new File(config.getRootDir(), "teams.txt"));
         matches = new Matches(new File(config.getRootDir(), "matches.txt"));
+        dualDivisionFinals = new Matches(new File(config.getRootDir(), "DualDivision_matches.txt"));
         awards = new Awards(new File(config.getRootDir(), "awards.txt"));
         
         // create the reports directory which will handle the sub-content in that directory
@@ -114,7 +116,7 @@ public final class App implements Runnable{
         division.put("matches", matches.getMatchList());
         division.put("rankings", rankings.getRankingList());
         
-        
+        body.put("finals", this.dualDivisionFinals.getMatchList());
 
         // register the root directory to the directory watcher.  This will cause
         // the dir watcher to get callbacks if any file in the directory changes
