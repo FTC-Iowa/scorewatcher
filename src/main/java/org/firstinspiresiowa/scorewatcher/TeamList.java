@@ -32,49 +32,49 @@ import org.json.simple.JSONObject;
 public class TeamList  implements FileEvents{
     private final File file;
     private final JSONArray teamArray;
-    
+
     public TeamList(File _file) {
         file = _file;
         teamArray = new JSONArray();
         if(file.exists()) {
             parseFile();
         }
-        
+
         try {
             App.app.dirWatcher.registerFile(this);
         } catch (IOException ex) {
             Logger.getLogger(TeamList.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     public JSONArray getTeamList() {
         return teamArray;
     }
-    
+
     public final void parseFile() {
         String row;
         int i = 0;
         try {
             FileReader fileReader = new FileReader(file);
             BufferedReader bufferedReader = new BufferedReader(fileReader);
-            
+
             while((row = bufferedReader.readLine()) != null) {
                 boolean rv = parseRow(i, row);
                 if(rv)
                     i++;
             }
-            
+
             bufferedReader.close();
-            
+
             App.app.log("Team List", teamArray.toJSONString());
-            
+
         } catch (FileNotFoundException ex) {
             Logger.getLogger(TeamList.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(TeamList.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     private boolean parseRow(int i, String row) {
         String cols[] = row.split("\\|");
         if(App.app.event.isMultiDivisions()) {
@@ -85,9 +85,9 @@ public class TeamList  implements FileEvents{
         }
         int number = Integer.parseInt(cols[1]);
         String name = cols[2].trim();
-        String city = cols[3].trim();
-        String state = cols[4].trim();
-        String country = cols[5].trim();
+        String city = cols[4].trim();
+        String state = cols[5].trim();
+        String country = cols[6].trim();
         JSONObject team = new JSONObject();
         team.put("name", name);
         team.put("number", number);
@@ -99,7 +99,7 @@ public class TeamList  implements FileEvents{
         } else {
             teamArray.add(i, team);
         }
-        
+
         App.app.log("Parsed Team", team.toJSONString());
         return true;
     }
@@ -111,14 +111,14 @@ public class TeamList  implements FileEvents{
 
     @Override
     public void onFileDelete() {
-        
+
     }
 
     @Override
     public void onFileModify() {
         parseFile();
     }
-    
+
     public File getFile() {
         return file;
     }
